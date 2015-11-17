@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<title>The truth. Here and now. Just listen to the silence.</title>
+<style type="text/css">
+html, body {
+ height:100%; 
+ margin: 0;
+ padding: 0;
+ border: 1;
+ outline: 0;
+ font-family: 'Lucida Grande', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+ font-size: 100%;
+ vertical-align: baseline;
+ background: transparent;
+}
+div {
+  background: #fff;
+  margin: 0 auto;
+  width: 200px;
+  padding: 100px;
+  text-align: center;
+  /* border-radius */
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  /* box-shadow */
+  -webkit-box-shadow: rgba(0,0,0,0.2) 0px 1px 3px;
+  -moz-box-shadow: rgba(0,0,0,0.2) 0px 1px 3px;
+  box-shadow: rgba(0,0,0,0.2) 0px 1px 3px;
+}
+table.stat {
+    position: absolute;
+    top: 15px;
+    right: 15px;    
+    text-align: left;
+    width: 250px;
+  }
+table.best {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    text-align: left;
+    width: 300px;
+  }
+
+</style>
+
+<script type="text/javascript">
+var lvl = 0;
+var a = 0;
+var b = 0;
+var last = 0;
+var best = 0;
+var best10 = 0;
+var sum = 0;
+var att = 0;
+var rank = 0;
+var titles = ["Kid", "Novice", "Student", "Associate", "Bachelor", "Master", "Doctor", "Honoraris Causa Doctor"];
+var ranking = [
+[4000, 2500, 1700, 1500, 1300, 1100, 950, 850],
+[15000, 10000, 7000, 4000, 3000, 2300, 1900, 1700],
+[40000, 25000, 15000, 8000, 6000, 5000, 4000, 3000],
+[120000, 30000, 20000, 12000, 8000, 6000, 5000, 4000],
+[150000, 40000, 25000, 15000, 10000, 8000, 6500, 5500],
+[180000, 50000, 30000, 20000, 12000, 9000, 7500, 6500],
+[200000, 60000, 35000, 25000, 15000, 11000, 9000, 7500],
+[220000, 70000, 40000, 30000, 20000, 15000, 10500, 8500],
+[250000, 80000, 45000, 35000, 25000, 18000, 14000, 10000]];
+function new_quest(flag){
+  var now = new Date(); 
+  if(flag){    
+    document.getElementById('best').rows[8].cells[1].innerHTML = 
+now.getFullYear()+'.'+
+('0'+(now.getMonth()+1)).slice(-2)+'.'+
+('0'+now.getDate()).slice(-2) + ' ' + 
+('0'+now.getHours()).slice(-2)+':'+
+('0'+now.getMinutes()).slice(-2)+':'+
+('0'+now.getSeconds()).slice(-2);
+
+    var row = document.getElementById('stat').insertRow(1);    
+    var cell = row.insertCell(0);
+    sum += parseInt(now - last);
+    att++;
+    document.getElementById('best').rows[1].cells[1].innerHTML = att;
+    if(best10 > 0){ 
+      if(now - last < best10/10)
+        cell.style.color = "Green";
+      if(now - last > 3*best10/10)
+        cell.style.color = "Red";
+    }
+    if((now - last < best)||(best == 0)) {
+      best =  parseInt(now - last);
+      document.getElementById('best').rows[2].cells[1].innerHTML = best;
+      cell.style.fontSize = "150%";
+    }
+    cell.innerHTML = parseInt(now - last);    
+    cell = row.insertCell(0);
+    cell.innerHTML = a + '+' + b + '=' + String(a+b);
+    if(document.getElementById('stat').getElementsByTagName("tr").length > 11)
+      sum -= parseInt(document.getElementById('stat').rows[11].cells[1].innerHTML);
+    if(document.getElementById('stat').getElementsByTagName("tr").length >= 11){   
+      cell = row.insertCell(-1);
+      cell.innerHTML = (sum+'').slice(0,-4)+'.'+(sum+'').slice(-4);
+      document.getElementById('best').rows[4].cells[1].innerHTML = cell.innerHTML;
+      if((sum < best10)||(best10 == 0)) {
+        best10 = sum;
+        document.getElementById('best').rows[3].cells[1].innerHTML = 
+          (best10+'').slice(0,-4)+'.'+(best10+'').slice(-4);
+        while((best10 < 10*ranking[lvl-1][rank])&&(rank < 8))rank++;
+        if(rank > 0) document.getElementById('best').rows[5].cells[1].innerHTML = titles[rank-1];
+        
+        if(rank < 8) {
+          var target = ranking[lvl-1][rank];
+          document.getElementById('best').rows[6].cells[1].innerHTML = 
+            (target+'').slice(0,-3)+'.'+(target+'').slice(-3);
+        }
+        else document.getElementById('best').rows[6].cells[1].innerHTML = "Nirvana";
+      }  
+    }else{
+      cell = row.insertCell(-1);
+      cell.innerHTML = "-";
+    }   
+    if(document.getElementById('stat').getElementsByTagName("tr").length > 25)
+      document.getElementById('stat').deleteRow(-1);
+  }
+  a = Math.floor((Math.random()*9 + 1) * Math.pow(10,lvl-1));
+  b = Math.floor((Math.random()*9 + 1) * Math.pow(10,lvl-1)); 
+  last = now;
+  document.getElementById('q').innerHTML = a + '+' + b;
+  document.getElementById('inp').value = '';
+}
+function check(inp){
+  if(a == 0){   
+      document.getElementById('best').rows[0].cells[1].innerHTML = lvl;   
+      lvl = parseInt(inp.value);
+      if((lvl >= 1) && (lvl <= 9)){                    
+          var now = new Date(); 
+          last = 0;  sum = 0;  
+          if(document.getElementById('best').rows[0].cells[1].innerHTML != lvl){
+            for(var i = 1; i < 9; i++)
+              document.getElementById('best').rows[i].cells[1].innerHTML = '';
+            document.getElementById('best').rows[0].cells[1].innerHTML = lvl;
+            document.getElementById('best').rows[7].cells[1].innerHTML = now.getFullYear()+'.'+('0'+(now.getMonth()+1)).slice(-2)+'.'+
+('0'+now.getDate()).slice(-2) + ' ' + ('0'+now.getHours()).slice(-2)+':'+
+('0'+now.getMinutes()).slice(-2)+':'+ ('0'+now.getSeconds()).slice(-2);
+            best = 0; best10 = 0; rank = 0; att = 0;             
+          }
+          var rows = document.getElementById('stat').rows;
+          for(; rows.length > 1; ) 
+            document.getElementById('stat').deleteRow(-1);
+          
+          new_quest(0);
+      }
+      else 
+        lvl = parseInt(document.getElementById('best').rows[0].cells[1].innerHTML);
+  }
+  else {
+      if(inp.value == String(a+b))
+        new_quest(1);
+      if(inp.value == 'q'){
+          a = 0; b = 0; last = 0;
+          document.getElementById('q').innerHTML = "Get ready"
+          document.getElementById('inp').value = '';
+        }
+    }
+}
+</script>
+</head>
+<body>
+<div>
+Welcome to the elementary<br />
+Math speed test.<br />
+Choose level by typing <br />
+Number from 1 to 9<br /> 
+Type 'q' to stop.
+<p id="q" style="font-size: 16pt">Get ready</p>
+<input id="inp" type="text" onkeyup='check(this)' autofocus />
+<br /><br /> 
+<small><small>
+Tips&hints:<br />
+- Time measurement is in milliseconds;<br />
+- Level you choose corresponds to digit count of the numbers to sum up;
+</small></small>
+<br /><br />
+To improve your sum skill for big numbers is recommended to use<br /><a href="./bignum.html">The Advanced Level</a>
+</div>
+<table id="stat" class="stat" ><tr><td>Equation</td><td>Time (ms)</td><td>Average of 10(s)</td></tr></table>
+<table id="best" class="best" >
+<tr><td>Level</td><td></td></tr>
+<tr><td>Attempts</td><td></td></tr>
+<tr><td>Best one</td><td></td></tr>
+<tr><td>Best avg of 10</td><td></td></tr>
+<tr><td>Last avg of 10</td><td></td></tr>
+<tr><td>Title</td><td></td></tr>
+<tr><td>Next mark</td><td></td></tr>
+<tr><td>First Attempt</td><td></td></tr>
+<tr><td>Last Attempt</td><td></td></tr>
+</table>
+</body>
+</html>
