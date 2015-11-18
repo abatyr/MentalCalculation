@@ -55,6 +55,9 @@ var best10 = 0;
 var sum = 0;
 var att = 0;
 var rank = 0;
+var lStorage = ('localStorage' in window && window['localStorage'] !== null);
+var storedStr = '';
+var storedResults = [];
 var titles = ["Kid", "Novice", "Student", "Associate", "Bachelor", "Master", "Doctor", "Honoraris Causa Doctor"];
 var ranking = [
 [4000, 2500, 1700, 1500, 1300, 1100, 950, 850],
@@ -66,6 +69,21 @@ var ranking = [
 [200000, 60000, 35000, 25000, 15000, 11000, 9000, 7500],
 [220000, 70000, 40000, 30000, 20000, 15000, 10500, 8500],
 [250000, 80000, 45000, 35000, 25000, 18000, 14000, 10000]];
+
+function refresh_best10(){
+	document.getElementById('best').rows[3].cells[1].innerHTML = 
+          (best10+'').slice(0,-4)+'.'+(best10+'').slice(-4);
+        while((best10 < 10*ranking[lvl-1][rank])&&(rank < 8))rank++;
+        if(rank > 0) document.getElementById('best').rows[5].cells[1].innerHTML = titles[rank-1];        
+        if(rank < 8) {
+          var target = ranking[lvl-1][rank];
+          document.getElementById('best').rows[6].cells[1].innerHTML = 
+            (target+'').slice(0,-3)+'.'+(target+'').slice(-3);
+        }
+        else document.getElementById('best').rows[6].cells[1].innerHTML = "Nirvana";
+	storedResults[lvl-1] = best10;
+	localStorage["sum"] = JSON.stringify(storedResults);
+}
 function new_quest(flag){
   var now = new Date(); 
   if(flag){    
@@ -104,17 +122,7 @@ now.getFullYear()+'.'+
       document.getElementById('best').rows[4].cells[1].innerHTML = cell.innerHTML;
       if((sum < best10)||(best10 == 0)) {
         best10 = sum;
-        document.getElementById('best').rows[3].cells[1].innerHTML = 
-          (best10+'').slice(0,-4)+'.'+(best10+'').slice(-4);
-        while((best10 < 10*ranking[lvl-1][rank])&&(rank < 8))rank++;
-        if(rank > 0) document.getElementById('best').rows[5].cells[1].innerHTML = titles[rank-1];
-        
-        if(rank < 8) {
-          var target = ranking[lvl-1][rank];
-          document.getElementById('best').rows[6].cells[1].innerHTML = 
-            (target+'').slice(0,-3)+'.'+(target+'').slice(-3);
-        }
-        else document.getElementById('best').rows[6].cells[1].innerHTML = "Nirvana";
+        refresh_best10();
       }  
     }else{
       cell = row.insertCell(-1);
@@ -133,28 +141,36 @@ now.getFullYear()+'.'+
 }
 function check(inp){
   if(a == 0){   
-      document.getElementById('best').rows[0].cells[1].innerHTML = lvl;   
+      var last_lvl = lvl; 
       lvl = parseInt(inp.value);
       if((lvl >= 1) && (lvl <= 9)){                    
           var now = new Date(); 
           last = 0;  sum = 0;  
-          if(document.getElementById('best').rows[0].cells[1].innerHTML != lvl){
+          if(last_lvl != lvl){
             for(var i = 1; i < 9; i++)
               document.getElementById('best').rows[i].cells[1].innerHTML = '';
             document.getElementById('best').rows[0].cells[1].innerHTML = lvl;
             document.getElementById('best').rows[7].cells[1].innerHTML = now.getFullYear()+'.'+('0'+(now.getMonth()+1)).slice(-2)+'.'+
 ('0'+now.getDate()).slice(-2) + ' ' + ('0'+now.getHours()).slice(-2)+':'+
 ('0'+now.getMinutes()).slice(-2)+':'+ ('0'+now.getSeconds()).slice(-2);
-            best = 0; best10 = 0; rank = 0; att = 0;             
+            best = 0; rank = 0; att = 0;
+            if (lStorage) {
+             storedStr = localStorage["sum"];
+            } else storedStr = '';
+            if (typeof storedStr !== 'undefined' && storedStr !== null){
+             storedResults = JSON.parse(storedStr);
+             best10 = storedResults[lvl-1];
+             if(best10 > 0) refresh_best10();
+             else best10 = 0;
+            } else best10 = 0;         
           }
           var rows = document.getElementById('stat').rows;
           for(; rows.length > 1; ) 
             document.getElementById('stat').deleteRow(-1);
-          
           new_quest(0);
       }
       else 
-        lvl = parseInt(document.getElementById('best').rows[0].cells[1].innerHTML);
+        lvl = last_lvl;
   }
   else {
       if(inp.value == String(a+b))
