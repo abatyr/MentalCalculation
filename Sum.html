@@ -125,8 +125,10 @@ now.getFullYear()+'.'+
   }
   a = Math.floor((Math.random()*9 + 1) * Math.pow(10,lvl-1));
   b = Math.floor((Math.random()*9 + 1) * Math.pow(10,lvl-1)); 
+  str_a = String(a).replace(/\B(?=(\d{3})+(?!\d))/g, "&nbsp;");
+  str_b = String(b).replace(/\B(?=(\d{3})+(?!\d))/g, "&nbsp;");
   last = now;
-  document.getElementById('q').innerHTML = a + '+' + b;
+  document.getElementById('q').innerHTML = str_a + '+' + str_b;
   document.getElementById('inp').value = '';
 }
 function check(inp){
