@@ -44,11 +44,6 @@ table.best {
   }
 
 </style>
-<script language="JavaScript"> 
- var div = document.getElementsByTagName('div')[0].style.display='NONE'; 
- var div = document.getElementsByTagName('div')[1].style.display='NONE'; 
- div.innerHTML = ''; 
-</script>
 
 <script type="text/javascript">
 var lvl = 0;
@@ -131,9 +126,15 @@ now.getFullYear()+'.'+
       document.getElementById('stat').deleteRow(-1);
   }
   a = Math.floor((Math.random()*15 + 1) * Math.pow(16,lvl-1));
-  b = Math.floor((Math.random()*15 + 1) * Math.pow(16,lvl-1)); 
+  b = Math.floor((Math.random()*15 + 1) * Math.pow(16,lvl-1));
+  str_a = Number(a).toString(16)
+  str_a = (str_a.length % 2 == 1) ? '0'+str_a : str_a;
+  str_a = str_a.replace(/\B(?=([0-9a-f]{2})+(?![0-9a-f]))/g, "&nbsp;");
+  str_b = Number(b).toString(16)
+  str_b = (str_b.length % 2 == 1) ? '0'+str_b : str_b;
+  str_b = str_b.replace(/\B(?=([0-9a-f]{2})+(?![0-9a-f]))/g, "&nbsp;");
   last = now;
-  document.getElementById('q').innerHTML = Number(a).toString(16) + '+' + Number(b).toString(16);
+  document.getElementById('q').innerHTML = str_a + '<br />' + str_b;
   document.getElementById('inp').value = '';
 }
 function check(inp){
@@ -182,7 +183,7 @@ Letters abcdef should be in lower case.<br />
 Choose level by typing <br />
 Number from 1 to 9<br /> 
 Type 'q' to stop.
-<p id="q" style="font-size: 16pt">Get ready</p>
+<p id="q" style="font-family: monospace; font-size: 16pt">Get ready</p>
 <input id="inp" type="text" onkeyup='check(this)' autofocus />
 <br /><br /> 
 <small><small>
